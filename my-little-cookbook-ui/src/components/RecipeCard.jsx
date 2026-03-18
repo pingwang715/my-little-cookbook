@@ -2,8 +2,8 @@ import React from "react";
 
 export default function RecipeCard({ recipe }) {
   return (
-    <div className="w-81 rounded-md mx-auto border border-gray-300 shadow-md overflow-hidden flex flex-col bg-white hover:shadow-lg transition">
-      <div className="relative w-full h-72 border-b border-gray-300">
+    <div className="w-81 rounded-md mx-auto border border-gray-300 dark:border-gray-600 shadow-md overflow-hidden flex flex-col bg-white dark:bg-gray-800 hover:border-primary dark:hover:border-lighter hover:shadow-lg transition">
+      <div className="relative w-full h-72 border-b border-gray-300 dark:border-gray-600">
         <img
           src={recipe.imageUrl}
           alt={recipe.name}
@@ -11,7 +11,8 @@ export default function RecipeCard({ recipe }) {
         />
       </div>
       <div className="relative h-24 p-4 flex flex-col font-primary">
-        <h2 className="text-lg font-bold">{recipe.name}</h2>
+        <h2 className="text-lg font-bold text-primary dark:text-light">{recipe.name}</h2>
+        <p className="text-base text-gray-600 dark:text-lighter">{recipe.country}</p>
       </div>
     </div>
   );

@@ -2,10 +2,16 @@
 
 @import "tailwindcss";
 
+/* input.css */
+@custom-variant dark (&:where(.dark, .dark *));
+
+
 @theme {
   --font-primary: "Nunito";
-  --color-primary: #df0000;
+  --color-primary: #AD0000;
   --color-dark: #9F0000;
   --color-light: #FFA6A6;
   --color-lighter: #FFC9C9;
+  --color-normalbg: #f3f4f6;
+  --color-darkbg: #1E2939;
 }

@@ -57,7 +57,7 @@ export default function RecipeListings({ recipes }) {
             <RecipeCard key={recipe.recipeId} recipe={recipe} />
           ))
         ) : (
-          <p className="text-center font-primary font-bold text-lg text-primary">
+          <p className="text-center font-primary font-bold text-lg text-primary dark:text-light">
             No recipes found
           </p>
         )}
