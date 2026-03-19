@@ -1,11 +1,13 @@
 package com.wangping.MyLittleCookbookSpringBoot.controller;
 
+import com.wangping.MyLittleCookbookSpringBoot.dto.RecipeDetailDto;
 import com.wangping.MyLittleCookbookSpringBoot.dto.RecipeDto;
 import com.wangping.MyLittleCookbookSpringBoot.entity.Recipe;
 import com.wangping.MyLittleCookbookSpringBoot.repository.RecipeRepository;
 import com.wangping.MyLittleCookbookSpringBoot.service.IRecipeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,5 +24,10 @@ public class RecipeController {
     public List<RecipeDto> getRecipes() {
         List<RecipeDto> recipeList = iRecipeService.getRecipes();
         return recipeList;
+    }
+
+    @GetMapping("/{id}")
+    public RecipeDetailDto getRecipe(@PathVariable Long id) {
+        return iRecipeService.getRecipeDetail(id);
     }
 }

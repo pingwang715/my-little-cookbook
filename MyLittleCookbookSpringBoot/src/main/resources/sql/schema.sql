@@ -19,8 +19,8 @@ CREATE TABLE IF NOT EXISTS recipes
 
 CREATE TABLE IF NOT EXISTS recipe_ingredients (
                                                   recipe_ingredient_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                                  recipe_id BIGINT,
-                                                  ingredient_id BIGINT,
+                                                  recipe_id BIGINT NOT NULL,
+                                                  ingredient_id BIGINT NOT NULL,
                                                   quantity DECIMAL(6,2),
     unit VARCHAR(50),
     notes VARCHAR(50),
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS recipe_ingredients (
 
 CREATE TABLE IF NOT EXISTS instructions (
                                             instruction_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                            recipe_id BIGINT,
+                                            recipe_id BIGINT NOT NULL,
                                             step_number INTEGER,
                                             description VARCHAR(500),
     FOREIGN KEY (recipe_id) REFERENCES recipes(recipe_id) ON DELETE CASCADE
