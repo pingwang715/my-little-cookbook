@@ -51,6 +51,16 @@ export default function Header() {
               </a>
             </li>
             <li>
+              <a href="/like" className={navLinkClass}>
+                Like
+              </a>
+            </li>
+            <li>
+              <a href="/add" className={navLinkClass}>
+                Add
+              </a>
+            </li>
+            <li>
               <a href="/login" className={navLinkClass}>
                 Login
               </a>

@@ -1,4 +1,4 @@
 package com.wangping.MyLittleCookbookSpringBoot.dto;
 
-public class RecipeDto {
+public class RecipeIngredientDto {
 }

@@ -1,8 +1,13 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function RecipeCard({ recipe }) {
   return (
-    <div className="w-81 rounded-md mx-auto border border-gray-300 dark:border-gray-600 shadow-md overflow-hidden flex flex-col bg-white dark:bg-gray-800 hover:border-primary dark:hover:border-lighter hover:shadow-lg transition">
+    <Link
+      to={`/recipes/${recipe.recipeId}`}
+      state={{ recipe }}
+      className="w-81 rounded-md mx-auto border border-gray-300 dark:border-gray-600 shadow-md overflow-hidden flex flex-col bg-white dark:bg-gray-800 hover:border-primary dark:hover:border-lighter hover:shadow-lg transition"
+    >
       <div className="relative w-full h-72 border-b border-gray-300 dark:border-gray-600">
         <img
           src={recipe.imageUrl}
@@ -14,6 +19,6 @@ export default function RecipeCard({ recipe }) {
         <h2 className="text-lg font-bold text-primary dark:text-light">{recipe.name}</h2>
         <p className="text-base text-gray-600 dark:text-lighter">{recipe.country}</p>
       </div>
-    </div>
+    </Link>
   );
 }

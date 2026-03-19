@@ -1,52 +1,28 @@
 import PageHeading from "./PageHeading";
 import RecipeListings from "./RecipeListings";
 import apiClient from "../api/apiClient";
-import { useState, useEffect } from "react";
+import { useLoaderData } from "react-router-dom";
 
 export default function Home() {
-  const [recipes, setRecipes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    fetchRecipes();
-  }, []);
-
-  const fetchRecipes = async () => {
-    try {
-      const response = await apiClient.get("/recipes"); // Axios GET request
-      setRecipes(response.data); // Update recipes state with fetched data
-    } catch (error) {
-      setError(
-        error.response?.data?.message || "Failed to fetch recipes. Please try again."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <span className="text-xl font-semibold text-primary dark:text-light">Loading recipes...</span>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <span className="text-xl font-semibold text-primary dark:text-light">Error: {error}</span>
-      </div>
-    );
-  }
-
+  const recipes = useLoaderData();
   return (
-    <div>
-      <PageHeading title="Find inspirations for the next meal!">
-        Save recipes in my little cookbook. Perfect for any occasion.
+    <div className="max-w-[1152px] mx-auto px-6 py-8">
+      <PageHeading title="Get Your Cooking Spoon Ready!">
+        Explore new recipes for your next meal and dessert.
       </PageHeading>
       <RecipeListings recipes={recipes} />
     </div>
-  );
+  )
+}
+
+export async function recipesLoader() {
+  try {
+    const response = await apiClient.get("/recipes");
+    return response.data;
+  } catch (error) {
+    throw new Response(
+      error.message || "Failed to fetch recipes. Please try again.",
+      { status: error.status || 500}
+    );
+  }
 }
