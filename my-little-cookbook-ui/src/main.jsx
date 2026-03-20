@@ -17,6 +17,7 @@ import Home, { recipesLoader } from "./components/Home.jsx";
 import ErrorPage from "./components/ErrorPage.jsx";
 import RecipeDetail from "./components/RecipeDetail.jsx";
 import Add from "./components/add.jsx";
+import { LikeProvider } from "./store/like-context.jsx";
 
 const routeDefinitions = createRoutesFromElements(
   <Route path="/" element={<App />} errorElement={<ErrorPage />}>
@@ -34,7 +35,9 @@ const appRouter = createBrowserRouter(routeDefinitions);
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={appRouter} />
+    <LikeProvider>
+      <RouterProvider router={appRouter} />
+    </LikeProvider>
     <ToastContainer
       position="bottom-right"
       autoClose={5000}

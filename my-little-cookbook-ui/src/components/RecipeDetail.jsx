@@ -1,23 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   faHeartCirclePlus,
   faHeartCircleMinus,
   faArrowLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useLocation, Link, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { getRecipeDetail } from "../api/recipeService";
+import ShareButtons from "../components/ShareButtons";
+import { useLike } from "../store/like-context";
 
 export default function RecipeDetail() {
-  const location = useLocation();
-  const recipe = location.state?.recipe;
-  const navigate = useNavigate();
+  const params = useParams();
+  const [recipe, setRecipe] = useState(null);
+  const { addToLike, removeFromLike, isLiked } = useLike();
 
+  useEffect(() => {
+    getRecipeDetail(params.recipeId).then((data) => setRecipe(data));
+  }, [params.recipeId]);
+
+  if (!recipe) {
+    return (
+      <div className="flex items-center justify-center min-h-[852px]">
+        <span className="text-4xl font-semibold text-primary dark:text-light">
+          Loading...
+        </span>
+      </div>
+    );
+  }
+
+  const toggleLike = () => {
+    if (isLiked(recipe.recipeId)) {
+      removeFromLike(recipe.recipeId);
+    } else {
+      addToLike(recipe);
+    }
+  };
 
   return (
-    <div className="min-h-min w-full flex flex-col font-primary px-6 py-6 bg-normalbg dark:bg-darkbg items-start">
+    <div className="min-h-screen w-full flex flex-col font-primary px-6 py-6 bg-normalbg dark:bg-darkbg items-start">
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row md:space-x-8">
         <div>
-          <Link to="/home" className="inline-flex items-center text-primary dark:text-light font-medium hover:text-dark dark:hover:text-lighter">
+          <Link
+            to="/home"
+            className="inline-flex items-center text-primary dark:text-light font-medium hover:text-dark dark:hover:text-lighter"
+          >
             <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
             Back to All Recipes
           </Link>
@@ -29,7 +56,11 @@ export default function RecipeDetail() {
             backgroundSize: "cover",
           }}
         >
-          <img src={recipe.imageUrl} alt={recipe.name} className="w-full h-full opacity-0"/>
+          <img
+            src={recipe.imageUrl}
+            alt={recipe.name}
+            className="w-full h-full opacity-0"
+          />
         </div>
 
         <div className="w-full md:2-1/2 flex flex-col space-y-6 mt-8 md:mt-0">
@@ -39,18 +70,40 @@ export default function RecipeDetail() {
           <p className="text-lg text-dark dark:text-lighter mb-4">
             {recipe.country} | {recipe.type}
           </p>
-          <p className="text-lg text-dark dark:text-lighter mb-4">
-            <FontAwesomeIcon icon={faHeartCirclePlus} />
-          </p>
+          <div className="flex gap-2">
+            <p className="text-xl text-dark dark:text-lighter mb-4">
+              <FontAwesomeIcon icon={isLiked(recipe.recipeId) ? faHeartCircleMinus : faHeartCirclePlus} onClick={toggleLike}/>
+            </p>
+            <ShareButtons></ShareButtons>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto flex flex-col md:flex-row md:space-x-8 ">
+      <div className="max-w-5xl mx-auto pt-6 md:flex-row md:space-x-8 ">
+        <h2 className="text-2xl font-bold text-primary dark:text-light pt-6 mb-4">
+          Ingredients
+        </h2>
+        <ul className="text-primary dark:text-lighter">
+          {recipe.ingredients.map((ing, index) => (
+            <li key={index} className="py-1">
+              {ing.quantity} {ing.unit} {ing.name}{" "}
+              {ing.note && `(${ing.notes})`}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="max-w-5xl pb-10 mx-auto md:flex-row md:space-x-8 ">
         <h2 className="text-2xl font-bold text-primary dark:text-light pt-6 mb-4">
           Instructions
         </h2>
-
-
+        <ol className="text-primary dark:text-lighter">
+          {recipe.instructions.map((step) => (
+            <li key={step.stepNumber} className="py-2">
+              {step.stepNumber}. {step.description}
+            </li>
+          ))}
+        </ol>
       </div>
     </div>
   );

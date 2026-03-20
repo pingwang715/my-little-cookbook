@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS recipes
 (
     recipe_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name        VARCHAR(250)                            NOT NULL,
-    image_url   VARCHAR(250)                            NOT NULL,
+    image_url   VARCHAR(250)
     country     VARCHAR(250)                            NOT NULL,
     type        VARCHAR(250)                            NOT NULL,
     created_at  TIMESTAMP   DEFAULT CURRENT_TIMESTAMP   NOT NULL,
