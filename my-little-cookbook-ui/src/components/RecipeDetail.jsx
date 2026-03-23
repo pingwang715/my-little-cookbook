@@ -38,7 +38,7 @@ export default function RecipeDetail() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col font-primary px-6 py-6 bg-normalbg dark:bg-darkbg items-start">
+    <div className="min-h-screen w-full flex flex-col font-primary px-6 py-6 bg-normalbg dark:bg-darkbg">
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row md:space-x-8">
         <div>
           <Link
@@ -52,14 +52,15 @@ export default function RecipeDetail() {
         <div
           className="w-full md:w-1/2 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg overflow-hidden bg-cover"
           style={{
-            backgroundImage: `url(${recipe.imageUrl})`,
+            backgroundImage: `url(http://localhost:8080${recipe.imageUrl})`,
             backgroundSize: "cover",
           }}
         >
           <img
-            src={recipe.imageUrl}
+            src={`http://localhost:8080${recipe.imageUrl}`}
             alt={recipe.name}
             className="w-full h-full opacity-0"
+
           />
         </div>
 

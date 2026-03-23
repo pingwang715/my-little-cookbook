@@ -29,7 +29,7 @@ export default function LikeList() {
                   className="flex items-center"
                 >
                   <img
-                    src={item.imageUrl}
+                    src={`http://localhost:8080${item.imageUrl}`}
                     alt={item.name}
                     className="w-16 h-16 rounded-b-md object-cover mr-4 hover:scale-110 transition-transform"
                   />

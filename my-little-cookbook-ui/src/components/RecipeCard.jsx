@@ -10,7 +10,7 @@ export default function RecipeCard({ recipe }) {
     >
       <div className="relative w-full h-72 border-b border-gray-300 dark:border-gray-600">
         <img
-          src={recipe.imageUrl}
+          src={`http://localhost:8080${recipe.imageUrl}`}
           alt={recipe.name}
           className="w-full h-full object-cover transition-transform duration-500 ease-in-out hover:scale-110"
         />

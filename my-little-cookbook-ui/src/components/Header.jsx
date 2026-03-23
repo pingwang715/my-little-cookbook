@@ -24,11 +24,11 @@ export default function Header() {
     });
   };
 
-  const navLinkClass = "text-center text-lg ont-primary py-2 font-semibold text-primary dark:text-light hover:text-dark dark:hover:text-lighter";
+  const navLinkClass = "text-center text-lg font-primary py-2 font-semibold text-primary dark:text-light hover:text-dark dark:hover:text-lighter";
 
   return (
     <header className="border-b border-gray-300 dark:border-gray-600 sticky top-0 z-20 bg-gray-50 dark:bg-darkbg">
-      <div className="flex items-center, justify-between mx-auto max-w-[1152px] px-6 py-6">
+      <div className="flex items-center justify-between mx-auto max-w-[1152px] px-6 py-6">
         <Link href="/" className={navLinkClass}>
           <FontAwesomeIcon icon={faUtensils} className="h-9 w-9 mx-1" />
           <span className="font-bold">My Little Cookbook</span>

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.util.List;
@@ -31,6 +32,7 @@ public class Recipe {
     @Column(name = "TYPE", nullable = false, length = 250)
     private String type;
 
+    @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "CREATED_AT", nullable = false)
     private Instant createdAt;
