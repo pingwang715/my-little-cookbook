@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class RecipeIngredientDto {
+
     private String name;
     private BigDecimal quantity;
     private String unit;

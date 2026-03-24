@@ -80,6 +80,7 @@ export default function Add() {
     );
     if (!userConfirmed) {
       toast.info("Recipe submission cancelled.");
+      return;
     }
 
     const data = new FormData(formRef.current);
@@ -101,8 +102,8 @@ export default function Add() {
       ingredients.push({
         name: data.get(`ingredients[${i}].name`),
         quantity: parseFloat(data.get(`ingredients[${i}].quantity`)),
-        unit: data.get(`ingredients[${i}].unit`),
-        notes: data.get(`ingredients[${i}].notes`),
+        unit: data.get(`ingredients[${i}].unit`) || null,
+        notes: data.get(`ingredients[${i}].notes`) || null,
       });
       i++;
     }
@@ -383,6 +384,7 @@ export default function Add() {
                 type="button"
                 onClick={() => {
                   setImagePreview(null);
+                  setImageFile(null);
                   document.getElementById("image").value = "";
                 }}
                 className="text-red-400 hover:text-red-600 transition"

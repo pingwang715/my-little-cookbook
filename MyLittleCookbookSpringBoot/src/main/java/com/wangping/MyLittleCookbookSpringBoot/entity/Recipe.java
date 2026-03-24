@@ -7,6 +7,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -49,9 +50,24 @@ public class Recipe {
     private String updatedBy;
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RecipeIngredient> recipeIngredients;
+    private List<RecipeIngredient> recipeIngredients = new ArrayList<>();
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("stepNumber ASC")
-    private List<Instruction> instructions;
+    private List<Instruction> instructions = new ArrayList<>();
+
+    // safe setters - mutate in place, never replace the reference
+    public void setRecipeIngredients(List<RecipeIngredient> incoming) {
+        this.recipeIngredients.clear();
+        if (incoming != null) {
+            this.recipeIngredients.addAll(incoming);
+        }
+    }
+
+    public void setInstructions(List<Instruction> incoming) {
+        this.instructions.clear();
+        if (incoming != null) {
+            this.instructions.addAll(incoming);
+        }
+    }
 }

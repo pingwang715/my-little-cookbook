@@ -99,6 +99,75 @@ public class RecipeServiceImpl implements IRecipeService {
         return transformToDetailDTO(savedRecipe);
     }
 
+    @Override
+    public RecipeDetailDto updateRecipe(Long id, UpdateRecipeRequestDto updateRecipeRequestDto, MultipartFile image) {
+        Recipe recipe = recipeRepository.findById(id).orElseThrow(() -> new RuntimeException("Recipe not found:" + id));
+
+        // Only update fields that are provided
+        if (updateRecipeRequestDto.getName() != null) {
+            recipe.setName(updateRecipeRequestDto.getName());
+        }
+        if (updateRecipeRequestDto.getCountry() != null) {
+            recipe.setCountry(updateRecipeRequestDto.getCountry());
+        }
+        if (updateRecipeRequestDto.getType() != null) {
+            recipe.setType(updateRecipeRequestDto.getType());
+        }
+        if (updateRecipeRequestDto.getIngredients() != null) {
+            recipe.getRecipeIngredients().clear();
+
+            List<RecipeIngredient> recipeIngredients = updateRecipeRequestDto.getIngredients()
+                    .stream()
+                    .map(dto -> {
+                        RecipeIngredient recipeIngredient = new RecipeIngredient();
+                        Ingredient ingredient = ingredientRepository.findByName(dto.getName())
+                                .orElseGet(() -> {
+                                    Ingredient newIngredient = new Ingredient();
+                                    newIngredient.setName(dto.getName());
+                                    return ingredientRepository.save(newIngredient);
+                                });
+
+                        recipeIngredient.setIngredient(ingredient);
+                        recipeIngredient.setQuantity(dto.getQuantity());
+                        recipeIngredient.setUnit(dto.getUnit());
+                        recipeIngredient.setNotes(dto.getNotes());
+                        recipeIngredient.setRecipe(recipe);
+
+                        return recipeIngredient;
+                    }).collect(Collectors.toList());
+            recipe.setRecipeIngredients(recipeIngredients);
+        }
+
+        if (updateRecipeRequestDto.getInstructions() != null) {
+            recipe.getInstructions().clear();
+
+            List<Instruction> instructions = updateRecipeRequestDto.getInstructions()
+                    .stream()
+                    .map(dto -> {
+                        Instruction instruction = new Instruction();
+                        instruction.setStepNumber(dto.getStepNumber());
+                        instruction.setDescription(dto.getDescription());
+                        instruction.setRecipe(recipe);
+                        return instruction;
+                    }).collect(Collectors.toList());
+            recipe.setInstructions(instructions);
+        }
+
+        if (image != null && !image.isEmpty()) {
+            recipe.setImageUrl(imageServiceImpl.saveImage(image));
+        }
+        recipe.setUpdatedAt(Instant.now());
+        recipe.setUpdatedBy("admin");
+        Recipe savedRecipe = recipeRepository.save(recipe);
+        return transformToDetailDTO(savedRecipe);
+    }
+
+    @Override
+    public void deleteRecipe(Long id) {
+        Recipe recipe = recipeRepository.findById(id).orElseThrow(() -> new RuntimeException("Recipe not found:" + id));
+        recipeRepository.delete(recipe);
+    }
+
     private RecipeDetailDto transformToDetailDTO(Recipe recipe) {
         RecipeDetailDto recipeDetailDto = new RecipeDetailDto();
         BeanUtils.copyProperties(recipe, recipeDetailDto);

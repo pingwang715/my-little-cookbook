@@ -3,17 +3,21 @@ import {
   faHeartCirclePlus,
   faHeartCircleMinus,
   faArrowLeft,
+  faPen,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, useParams } from "react-router-dom";
-import { getRecipeDetail } from "../api/recipeService";
+import { deleteRecipe, getRecipeDetail } from "../api/recipeService";
 import ShareButtons from "../components/ShareButtons";
 import { useLike } from "../store/like-context";
+import { useNavigate } from "react-router-dom";
 
 export default function RecipeDetail() {
   const params = useParams();
   const [recipe, setRecipe] = useState(null);
   const { addToLike, removeFromLike, isLiked } = useLike();
+  const navigate = useNavigate();
 
   useEffect(() => {
     getRecipeDetail(params.recipeId).then((data) => setRecipe(data));
@@ -36,6 +40,21 @@ export default function RecipeDetail() {
       addToLike(recipe);
     }
   };
+
+  const handleDelete = async () => {
+    const userConfirmed = window.confirm("Are you sure you want to delete this recipe?");
+    if (!userConfirmed) return;
+
+    try {
+      await deleteRecipe(recipe.recipeId);
+      navigate("/");
+    } catch (error) {
+        throw new Response(
+        error.message || "Failed to delete your recipe. Please try again.",
+        { status: error.status || 500 },
+      );
+    }
+  }
 
   return (
     <div className="min-h-screen w-full flex flex-col font-primary px-6 py-6 bg-normalbg dark:bg-darkbg">
@@ -60,7 +79,6 @@ export default function RecipeDetail() {
             src={`http://localhost:8080${recipe.imageUrl}`}
             alt={recipe.name}
             className="w-full h-full opacity-0"
-
           />
         </div>
 
@@ -72,9 +90,30 @@ export default function RecipeDetail() {
             {recipe.country} | {recipe.type}
           </p>
           <div className="flex gap-2">
-            <p className="text-xl text-dark dark:text-lighter mb-4">
-              <FontAwesomeIcon icon={isLiked(recipe.recipeId) ? faHeartCircleMinus : faHeartCirclePlus} onClick={toggleLike}/>
+            <p className="text-xl text-primary dark:text-light mb-4 hover:text-dark dark:hover:text-lighter">
+              <FontAwesomeIcon
+                icon={
+                  isLiked(recipe.recipeId)
+                    ? faHeartCircleMinus
+                    : faHeartCirclePlus
+                }
+                onClick={toggleLike}
+              />
             </p>
+
+            <Link
+              to={`/recipes/${recipe.recipeId}/edit`}
+              className="text-xl text-primary dark:text-light mb-4 hover:text-dark dark:hover:text-lighter"
+              >
+              <FontAwesomeIcon icon={faPen} />
+            </Link>
+
+            <button
+              onClick={() => handleDelete(recipe.recipeId)}
+              className="text-xl text-primary dark:text-light mb-4 hover:text-dark dark:hover:text-lighter"
+              >
+              <FontAwesomeIcon icon={faTrash} />
+            </button>
             <ShareButtons></ShareButtons>
           </div>
         </div>
