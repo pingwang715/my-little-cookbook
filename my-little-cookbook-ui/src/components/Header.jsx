@@ -61,11 +61,6 @@ export default function Header() {
                 Add
               </NavLink>
             </li>
-            <li>
-              <NavLink to="/login" className={({isActive}) => isActive ? `underline ${navLinkClass}` : navLinkClass}>
-                Login
-              </NavLink>
-            </li>
           </ul>
         </nav>
       </div>

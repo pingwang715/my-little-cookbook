@@ -9,12 +9,10 @@ import {
 import { EmailShareButton, EmailIcon } from "react-share";
 
 export default function ShareButtons() {
-
-
   return (
     <>
       <EmailShareButton
-        subject="Take a look"
+        subject="New recipe"
         body="Thought you might like this:"
         aria-label="Share by email"
         url="localhost:5173"
@@ -23,20 +21,36 @@ export default function ShareButtons() {
       </EmailShareButton>
 
       <WhatsappShareButton
-        title="Read this next"
+        title="Check out this recipe"
         aria-label="Share on WhatsApp"
         url="localhost:5173"
       >
         <WhatsappIcon size={24} round />
       </WhatsappShareButton>
 
-      <FacebookShareButton hashtag="#reactshare" aria-label="Share on Facebook" url="localhost:5173">
+      <FacebookShareButton
+        hashtag="#mylittlecookbook"
+        aria-label="Share on Facebook"
+        url="localhost:5173"
+      >
         <FacebookIcon size={24} round />
       </FacebookShareButton>
 
-      <FacebookMessengerShareButton aria-label="Send in Messenger" url="localhost:5173">
+      <FacebookMessengerShareButton
+        aria-label="Send in Messenger"
+        url="localhost:5173"
+      >
         <FacebookMessengerIcon size={24} round />
       </FacebookMessengerShareButton>
+
+      <XShareButton
+        title="Read this next"
+        hashtags={["mylittlecookbook", "recipe"]}
+        url="localhost:5173"
+        aria-label="Share on X"
+      >
+        <XIcon size={24} round />
+      </XShareButton>
     </>
   );
 }

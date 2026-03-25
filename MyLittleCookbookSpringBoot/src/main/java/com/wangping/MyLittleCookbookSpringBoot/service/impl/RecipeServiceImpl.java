@@ -55,6 +55,10 @@ public class RecipeServiceImpl implements IRecipeService {
         recipe.setName(createRecipeRequestDto.getName());
         recipe.setCountry(createRecipeRequestDto.getCountry());
         recipe.setType(createRecipeRequestDto.getType());
+        recipe.setPrepTime(createRecipeRequestDto.getPrepTime());
+        recipe.setCookTime(createRecipeRequestDto.getCookTime());
+        recipe.setTotalTime(createRecipeRequestDto.getTotalTime());
+        recipe.setServings(createRecipeRequestDto.getServings());
         recipe.setImageUrl(imageUrl);
 
         // ingredients
@@ -112,6 +116,18 @@ public class RecipeServiceImpl implements IRecipeService {
         }
         if (updateRecipeRequestDto.getType() != null) {
             recipe.setType(updateRecipeRequestDto.getType());
+        }
+        if (updateRecipeRequestDto.getPrepTime() != null) {
+            recipe.setPrepTime(updateRecipeRequestDto.getPrepTime());
+        }
+        if (updateRecipeRequestDto.getCookTime() != null) {
+            recipe.setCookTime(updateRecipeRequestDto.getCookTime());
+        }
+        if (updateRecipeRequestDto.getTotalTime() != null) {
+            recipe.setTotalTime(updateRecipeRequestDto.getTotalTime());
+        }
+        if (updateRecipeRequestDto.getServings() != null) {
+            recipe.setServings(updateRecipeRequestDto.getServings());
         }
         if (updateRecipeRequestDto.getIngredients() != null) {
             recipe.getRecipeIngredients().clear();

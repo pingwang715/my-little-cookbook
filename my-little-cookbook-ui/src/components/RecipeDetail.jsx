@@ -83,14 +83,20 @@ export default function RecipeDetail() {
         </div>
 
         <div className="w-full md:2-1/2 flex flex-col space-y-6 mt-8 md:mt-0">
-          <h1 className="text-3xl font-extrabold text-primary dark:text-light mb-4">
+          <h1 className="text-3xl font-extrabold text-dark dark:text-light mb-4">
             {recipe.name}
           </h1>
-          <p className="text-lg text-dark dark:text-lighter mb-4">
+          <p className="text-lg text-primary dark:text-lighter mb-4">
             {recipe.country} | {recipe.type}
           </p>
+          <p className="text-md text-primary dark:text-lighter mb-4">
+            Prep time: {recipe.prepTime} minutes | Cook time: {recipe.cookTime} minutes  | Total time: {recipe.totalTime} minutes
+          </p>
+          <p className="text-md text-primary dark:text-lighter mb-4">
+            Servings: {recipe.servings}
+          </p>
           <div className="flex gap-2">
-            <p className="text-xl text-primary dark:text-light mb-4 hover:text-dark dark:hover:text-lighter">
+            <p className="text-lg text-primary dark:text-light mb-4 hover:text-dark dark:hover:text-lighter">
               <FontAwesomeIcon
                 icon={
                   isLiked(recipe.recipeId)
@@ -103,14 +109,14 @@ export default function RecipeDetail() {
 
             <Link
               to={`/recipes/${recipe.recipeId}/edit`}
-              className="text-xl text-primary dark:text-light mb-4 hover:text-dark dark:hover:text-lighter"
+              className="text-lg text-primary dark:text-light mb-4 hover:text-dark dark:hover:text-lighter"
               >
               <FontAwesomeIcon icon={faPen} />
             </Link>
 
             <button
               onClick={() => handleDelete(recipe.recipeId)}
-              className="text-xl text-primary dark:text-light mb-4 hover:text-dark dark:hover:text-lighter"
+              className="text-lg text-primary dark:text-light mb-4 hover:text-dark dark:hover:text-lighter"
               >
               <FontAwesomeIcon icon={faTrash} />
             </button>
@@ -120,14 +126,14 @@ export default function RecipeDetail() {
       </div>
 
       <div className="max-w-5xl mx-auto pt-6 md:flex-row md:space-x-8 ">
-        <h2 className="text-2xl font-bold text-primary dark:text-light pt-6 mb-4">
+        <h2 className="text-2xl font-bold text-dark dark:text-light pt-6 mb-4">
           Ingredients
         </h2>
         <ul className="text-primary dark:text-lighter">
           {recipe.ingredients.map((ing, index) => (
             <li key={index} className="py-1">
               {ing.quantity} {ing.unit} {ing.name}{" "}
-              {ing.note && `(${ing.notes})`}
+              {ing.notes && `(${ing.notes})`}
             </li>
           ))}
         </ul>

@@ -11,7 +11,6 @@ import {
   Route,
 } from "react-router-dom";
 import About from "./components/About.jsx";
-import Login from "./components/Login.jsx";
 import Like from "./components/Like.jsx";
 import Home, { recipesLoader } from "./components/Home.jsx";
 import ErrorPage from "./components/ErrorPage.jsx";
@@ -25,7 +24,6 @@ const routeDefinitions = createRoutesFromElements(
     <Route index element={<Home />} loader={recipesLoader} />
     <Route path="/home" element={<Home />} loader={recipesLoader} />
     <Route path="/about" element={<About />} />
-    <Route path="/login" element={<Login />} />
     <Route path="/like" element={<Like />} />
     <Route path="/add" element={<Add />} />
     <Route path="/recipes/:recipeId" element={<RecipeDetail />} />
@@ -38,7 +36,7 @@ const appRouter = createBrowserRouter(routeDefinitions);
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <LikeProvider>
-      <RouterProvider router={appRouter} />
+      <RouterProvider router={appRouter} fallbackElement={<div>Loading...</div>}/>
     </LikeProvider>
     <ToastContainer
       position="bottom-right"

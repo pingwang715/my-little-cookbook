@@ -11,5 +11,8 @@ public class RecipeDto {
     private String imageUrl;
     private String country;
     private String type;
-
+    private Integer prepTime;
+    private Integer cookTime;
+    private Integer totalTime;
+    private Integer servings;
 }

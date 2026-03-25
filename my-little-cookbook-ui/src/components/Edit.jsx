@@ -30,12 +30,27 @@ export default function Edit() {
   const [ingredients, setIngredients] = useState([]);
   const [instructions, setInstructions] = useState([]);
 
+  const [prepTime, setPrepTime] = useState("");
+  const [cookTime, setCookTime] = useState("");
+  const [totalTime, setTotalTime] = useState("");
+  const [servings, setServings] = useState("");
+
+  useEffect(() => {
+    if (prepTime && cookTime) {
+      setTotalTime(String(parseInt(prepTime) + parseInt(cookTime)));
+    }
+  }, [prepTime, cookTime]);
+
   // Load existing recipe data
   useEffect(() => {
     getRecipeDetail(recipeId).then((data) => {
       setName(data.name);
       setCountry(data.country);
       setType(data.type);
+      setPrepTime(data.prepTime);
+      setCookTime(data.cookTime);
+      setTotalTime(data.totalTime);
+      setServings(data.servings);
       setImagePreview(`${BASE_URL}${data.imageUrl}`);
       setIngredients(
         (data.ingredients ?? []).map((ing) => ({
@@ -103,7 +118,7 @@ export default function Edit() {
 
   const handleInstructionChange = (id, value) => {
     setInstructions((prev) =>
-      prev.map((ins) => (ins.id === id ? { ...ins, description: value } : ins))
+      prev.map((ins) => (ins.id === id ? { ...ins, description: value } : ins)),
     );
   };
 
@@ -113,6 +128,30 @@ export default function Edit() {
     if (!userConfirmed) return;
 
     const payload = new FormData();
+
+    const json = JSON.stringify({
+      name,
+      country,
+      type,
+      prepTime: prepTime ? parseInt(prepTime) : null,
+      cookTime: cookTime ? parseInt(cookTime) : null,
+      totalTime: totalTime ? parseInt(totalTime) : null,
+      servings: servings ? parseInt(servings) : null,
+      ingredients: ingredients.map(({ name, quantity, unit, notes }) => ({
+        name,
+        quantity: quantity ? parseFloat(quantity) : null,
+        unit,
+        notes,
+      })),
+      instructions: instructions.map(({ stepNumber, description }) => ({
+        stepNumber,
+        description,
+      })),
+    });
+
+    console.log("Sending:", json); // ← check this in browser console
+
+    payload.append("recipe", new Blob([json], { type: "application/json" }));
     payload.append(
       "recipe",
       new Blob(
@@ -121,6 +160,10 @@ export default function Edit() {
             name,
             country,
             type,
+            prepTime: prepTime ? parseInt(prepTime) : null,
+            cookTime: cookTime ? parseInt(cookTime) : null,
+            totalTime: totalTime ? parseInt(totalTime) : null,
+            servings: servings ? parseInt(servings) : null,
             ingredients: ingredients.map(({ name, quantity, unit, notes }) => ({
               name,
               quantity: quantity ? parseFloat(quantity) : null,
@@ -147,24 +190,11 @@ export default function Edit() {
       toast.success("Recipe updated successfully!");
       navigate(`/recipes/${recipeId}`);
     } catch (error) {
-      console.error("Full error object:", error);
-      console.error("Error response data:", error.response?.data);
-      console.error("Error response status:", error.response?.status);
-      console.error("Error response headers:", error.response?.headers);
-
-      // Show the actual error message from the server
-      const errorMessage = error.response?.data?.message ||
-                          error.response?.data?.error ||
-                          error.response?.data ||
-                          error.message ||
-                          "Failed to update your recipe. Please try again.";
-
-      toast.error(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage));
       setIsSubmitting(false);
-        throw new Response(
-          error.message || "Failed to update your recipe. Please try again.",
-          { status: error.status || 500 },
-        );
+      throw new Response(
+        error.message || "Failed to update your recipe. Please try again.",
+        { status: error.status || 500 },
+      );
     }
   };
 
@@ -208,14 +238,63 @@ export default function Edit() {
           </div>
           <div>
             <label className={labelStyle}>Type</label>
-            <input
+            <select
               value={type}
               onChange={(e) => setType(e.target.value)}
               className={textFieldStyle}
-              type="text"
               required
+            >
+              <option value="meal">meal</option>
+              <option value="dessert">dessert</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div>
+            <label className={labelStyle}>Prep time</label>
+            <input
+              value={prepTime}
+              onChange={(e) => setPrepTime(e.target.value)}
+              type="number"
+              required
+              className={textFieldStyle}
+              min={0}
             />
           </div>
+          <div>
+            <label className={labelStyle}>Cook time</label>
+            <input
+              value={cookTime}
+              onChange={(e) => setCookTime(e.target.value)}
+              type="number"
+              required
+              className={textFieldStyle}
+              min={0}
+            />
+          </div>
+          <div>
+            <label className={labelStyle}>Total time</label>
+            <input
+              value={totalTime}
+              type="number"
+              required
+              readOnly
+              className={`${textFieldStyle} opacity-60`}
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className={labelStyle}>Servings</label>
+          <input
+            value={servings}
+            onChange={(e) => setServings(e.target.value)}
+            type="number"
+            className={textFieldStyle}
+            min="1"
+            max="20"
+          />
         </div>
 
         {/* Ingredients */}
@@ -229,6 +308,7 @@ export default function Edit() {
                   className="grid grid-cols-4 gap-3 items-center"
                 >
                   <input
+                    name={`ingredients[${index}].name`}
                     type="text"
                     placeholder="Ingredient"
                     value={ing.name}
@@ -239,6 +319,7 @@ export default function Edit() {
                     required
                   />
                   <input
+                    name={`ingredients[${index}].quantity`}
                     type="text"
                     placeholder="1, 2 ..."
                     value={ing.quantity}
@@ -249,6 +330,7 @@ export default function Edit() {
                     required
                   />
                   <input
+                    name={`ingredients[${index}].unit`}
                     type="text"
                     placeholder="g, tbsp ..."
                     value={ing.unit}
@@ -259,6 +341,7 @@ export default function Edit() {
                   />
                   <div className="flex gap-2">
                     <input
+                      name={`ingredients[${index}].notes`}
                       type="text"
                       placeholder="sliced ..."
                       value={ing.notes}
@@ -376,7 +459,6 @@ export default function Edit() {
                     type="button"
                     onClick={() => {
                       setImageFile(null);
-
                     }}
                   >
                     Revert

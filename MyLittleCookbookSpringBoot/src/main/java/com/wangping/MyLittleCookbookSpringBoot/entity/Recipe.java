@@ -33,6 +33,18 @@ public class Recipe {
     @Column(name = "TYPE", nullable = false, length = 250)
     private String type;
 
+    @Column(name ="PREP_TIME", nullable = false, length = 250)
+    private Integer prepTime;
+
+    @Column(name = "COOK_TIME", nullable = false, length = 250)
+    private Integer cookTime;
+
+    @Column(name = "TOTAL_TIME", nullable = false, length = 250)
+    private Integer totalTime;
+
+    @Column(name = "SERVINGS", nullable = false, length = 250)
+    private Integer servings;
+
     @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "CREATED_AT", nullable = false)

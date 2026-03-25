@@ -1,11 +1,14 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import PageTitle from "./PageTitle";
-import { Form } from "react-router-dom";
 import apiClient from "../api/apiClient";
-import { useNavigation } from "react-router-dom";
+import { useNavigation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlusCircle, faTrash, faImage } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlusCircle,
+  faTrash,
+  faImage,
+} from "@fortawesome/free-solid-svg-icons";
 import { BASE_URL } from "../api/photoService";
 
 export default function Add() {
@@ -14,6 +17,17 @@ export default function Add() {
   const isSubmitting = navigation.state === "submitting";
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
+  const [prepTime, setPrepTime] = useState("");
+  const [cookTime, setCookTime] = useState("");
+  const [totalTime, setTotalTime] = useState("");
+
+  useEffect(() => {
+    if (prepTime && cookTime) {
+      setTotalTime(String(parseInt(prepTime) + parseInt(cookTime)));
+    }
+  }, [prepTime, cookTime]);
+
+  const navigate = useNavigate();
 
   const [ingredients, setIngredients] = useState([
     { id: Date.now(), name: "", quantity: "", unit: "", notes: "" },
@@ -31,9 +45,9 @@ export default function Add() {
     const file = e.target.files?.[0];
     if (file) {
       setImageFile(file);
-      setImagePreview(URL.createObjectURL(file))
+      setImagePreview(URL.createObjectURL(file));
     }
-  }
+  };
 
   const addIngredient = () => {
     setIngredients((prev) => [
@@ -56,22 +70,23 @@ export default function Add() {
   const addInstruction = () => {
     setInstructions((prev) => [
       ...prev,
-    {id: Date.now(), stepNumber: prev.length + 1, description: ""}]);
+      { id: Date.now(), stepNumber: prev.length + 1, description: "" },
+    ]);
   };
 
   const removeInstruction = (id) => {
     if (instructions.length === 1) return;
     setInstructions((prev) => {
-      const filtered = prev.filter((ins) => ins.id !==id);
+      const filtered = prev.filter((ins) => ins.id !== id);
       return filtered.map((ins, index) => ({ ...ins, stepNumber: index + 1 }));
-    })
-  }
+    });
+  };
 
   const handleInstructionChange = (id, value) => {
     setInstructions((prev) =>
-      prev.map((ins) => (ins.id === id ? { ...ins, description: value } : ins))
+      prev.map((ins) => (ins.id === id ? { ...ins, description: value } : ins)),
     );
-  }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -92,9 +107,12 @@ export default function Add() {
     const name = data.get("name");
     const country = data.get("country");
     const type = data.get("type");
+    const prepTime = data.get("prepTime");
+    const cookTime = data.get("cookTime");
+    const totalTime = data.get("totalTime");
+    const servings = data.get("servings");
     const image = data.get("image");
     console.log("Image:", image); // should be a File object, not null
-
 
     const ingredients = [];
     let i = 0;
@@ -110,7 +128,7 @@ export default function Add() {
 
     const instructions = [];
     let j = 0;
-    while(data.get(`instructions[${j}].description`)) {
+    while (data.get(`instructions[${j}].description`)) {
       instructions.push({
         stepNumber: Number(data.get(`instructions[${j}].stepNumber`)),
         description: data.get(`instructions[${j}].description`),
@@ -123,13 +141,38 @@ export default function Add() {
     // ✅ Blob with explicit type so Spring sees Content-Type: application/json on this part
     payload.append(
       "recipe",
-      new Blob([JSON.stringify({ name, country, type, ingredients, instructions })], {
-        type: "application/json",
-      })
+      new Blob(
+        [
+          JSON.stringify({
+            name,
+            country,
+            type,
+            prepTime: prepTime ? parseInt(prepTime) : null,
+            cookTime: cookTime ? parseInt(cookTime) : null,
+            totalTime: totalTime ? parseInt(totalTime) : null,
+            servings: servings ? parseInt(servings) : null,
+            ingredients,
+            instructions,
+          }),
+        ],
+        {
+          type: "application/json",
+        },
+      ),
     );
     payload.append("image", imageFile);
 
-    const recipeJson = { name, country, type, ingredients, instructions };
+    const recipeJson = {
+      name,
+      country,
+      type,
+      prepTime,
+      cookTime,
+      totalTime,
+      servings,
+      ingredients,
+      instructions,
+    };
 
     console.log("Sending payload:", JSON.stringify(recipeJson, null, 2)); // ← add this
     console.log("Image:", imageFile);
@@ -141,15 +184,18 @@ export default function Add() {
         },
       });
       // formRef.current?.reset();
-      setIngredients([{ id: Date.now(), name: "", quantity: "", unit: "", notes: "" }]);
+      setIngredients([
+        { id: Date.now(), name: "", quantity: "", unit: "", notes: "" },
+      ]);
       setInstructions([{ id: Date.now(), stepNumber: 1, description: "" }]);
       setImagePreview(null);
       setImageFile(null);
       toast.success("Your recipe has been submitted successfully!");
+      navigate("/home");
     } catch (error) {
       throw new Response(
         error.message || "Failed to submit your recipe. Please try again.",
-        { status: error.status || 500}
+        { status: error.status || 500 },
       );
     }
   };
@@ -163,8 +209,7 @@ export default function Add() {
     <div className="max-w-[1152px] min-h-[852px] mx-auto px-6 py-8 font-primary bg-normalbg dark:bg-darkbg">
       <PageTitle title="New Recipe" />
 
-      <Form
-        method="POST"
+      <form
         ref={formRef}
         onSubmit={handleSubmit}
         className="space-y-6 max-w-[768px] mx-auto"
@@ -203,15 +248,77 @@ export default function Add() {
             <label htmlFor="type" className={labelStyle}>
               Type
             </label>
+            <select name="type" id="type" className={textFieldStyle} required>
+              <option value="meal">meal</option>
+              <option value="dessert">dessert</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div>
+            <label htmlFor="prepTime" className={labelStyle}>
+              Prep time
+            </label>
             <input
-              id="type"
-              name="type"
-              type="text"
-              placeholder="Recipe Type"
+              id="prepTime"
+              name="prepTime"
+              type="number"
+              placeholder="minutes"
               required
               className={textFieldStyle}
+              min={0}
+              value={prepTime}
+              onChange={(e) => setPrepTime(e.target.value)}
             />
           </div>
+          <div>
+            <label htmlFor="cookTime" className={labelStyle}>
+              Cook time
+            </label>
+            <input
+              id="cookTime"
+              name="cookTime"
+              type="number"
+              placeholder="minutes"
+              required
+              className={textFieldStyle}
+              min={0}
+              value={cookTime}
+              onChange={(e) => setCookTime(e.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="prepTime" className={labelStyle}>
+              Total time
+            </label>
+            <input
+              id="totalTime"
+              name="totalTime"
+              type="number"
+              placeholder="minutes"
+              required
+              className={`${textFieldStyle} opacity-60`}
+              min={0}
+              value={totalTime}
+              readOnly
+            />
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="servings" className={labelStyle}>
+            Servings
+          </label>
+          <input
+            type="number"
+            id="servings"
+            name="servings"
+            placeholder="1"
+            className={textFieldStyle}
+            min="1"
+            max="20"
+          />
         </div>
 
         <div className="gap-6">
@@ -291,7 +398,6 @@ export default function Add() {
               <span>Add Ingredient</span>
             </button>
           </div>
-
         </div>
         <div>
           <label className={labelStyle}>Instructions</label>
@@ -299,10 +405,11 @@ export default function Add() {
           <div className="space-y-3">
             {instructions.map((ins, index) => (
               <div key={ins.id} className="flex gap-3 items-center">
-
                 {/* Step number badge */}
-                <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center
-                  rounded-full bg-primary dark:bg-light text-white text-sm font-bold">
+                <span
+                  className="flex-shrink-0 w-8 h-8 flex items-center justify-center
+                  rounded-full bg-primary dark:bg-light text-white text-sm font-bold"
+                >
                   {ins.stepNumber}
                 </span>
 
@@ -316,7 +423,9 @@ export default function Add() {
                   type="text"
                   placeholder={`Step ${ins.stepNumber}...`}
                   value={ins.description}
-                  onChange={(e) => handleInstructionChange(ins.id, e.target.value)}
+                  onChange={(e) =>
+                    handleInstructionChange(ins.id, e.target.value)
+                  }
                   className={`${textFieldStyle} flex-1`}
                   required
                 />
@@ -342,7 +451,6 @@ export default function Add() {
             <span>Add Step</span>
           </button>
         </div>
-
 
         <div>
           <label className={labelStyle}>Image</label>
@@ -403,7 +511,7 @@ export default function Add() {
             {isSubmitting ? "Submitting..." : "Submit"}
           </button>
         </div>
-      </Form>
+      </form>
     </div>
   );
 }
